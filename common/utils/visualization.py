@@ -67,11 +67,15 @@ class Visualizer(object):
         self.log_distances = randomized_env_id.find('Lunar') == -1
         self.randomized_env = make_vec_envs(self.randomized_env_id, self.seed, self.neval_eps)
 
-    def generate_ground_truth(self, simulator_agent, agent_policy, timesteps, log_path):
+    def generate_ground_truth(self, simulator_agent, agent_policy, timesteps, log_path, plot_path, record_video=False):
         logger.debug('Generating ground truth...')
 
         self.evaluation_scores = [None] * simulator_agent.nparams
-        default_values = [['default'] * simulator_agent.nparams] * self.neval_eps
+        # default_values = [['default'] * simulator_agent.nparams] * self.neval_eps
+        # print(dir(self.randomized_env))
+        # default_values = [self.randomized_env.dimensions[dimension].default_value for dimension in range(0, simulator_agent.nparams)] * self.neval_eps
+        # default_values = [self.randomized_env.unwrapped.dimensions[dimension].default_value for dimension in range(0, simulator_agent.nparams)] * self.neval_eps
+        default_values = [[self.randomized_env.unwrapped.dimensions[dimension].default_value for dimension in range(0, simulator_agent.nparams)]] * self.neval_eps
 
         for randomized_dimension in range(simulator_agent.nparams):
             evaluation_array = []
@@ -87,7 +91,8 @@ class Visualizer(object):
                 
                 randomized_rewards, final_distances = evaluate_policy(nagents=self.neval_eps, env=self.randomized_env, 
                     agent_policy=agent_policy, replay_buffer=None, eval_episodes=1,
-                    max_steps=self.max_steps, return_rewards=True, add_noise=False, log_distances=self.log_distances)
+                    max_steps=self.max_steps, return_rewards=True, record_video=record_video, add_noise=False, log_distances=self.log_distances,
+                    video_path=os.path.join(plot_path, 'raw_video-%d-dim%d-index-%dof%d'%(timesteps, randomized_dimension, i+1, len(self.ground_truth_x))))
 
                 if self.log_distances:
                     evaluation_array.append(np.array([np.mean(final_distances), np.std(final_distances)]))
@@ -104,6 +109,8 @@ class Visualizer(object):
         np.savez('{}.npz'.format(os.path.join(log_path, 'raw_rewards-{}'.format(timesteps))), 
             raw_rewards=self.evaluation_scores)
 
+        # TODO: save video of rollouts -> in evaluate_policy
+
         logger.info('Ground truth generated.')
         return self.evaluation_scores
 
@@ -111,7 +118,8 @@ class Visualizer(object):
     def plot_discriminator_reward(self, simulator_agent, agent_policy, timesteps, plot_path, log_path):
         logger.debug('Generating ground truth...')
 
-        default_values = [['default'] * simulator_agent.nparams] * self.neval_eps
+        # default_values = [['default'] * simulator_agent.nparams] * self.neval_eps
+        default_values = [[self.randomized_env.unwrapped.dimensions[dimension].default_value for dimension in range(0, simulator_agent.nparams)]] * self.neval_eps
 
         for randomized_dimension in range(simulator_agent.nparams):
             evaluation_array_mean = []
@@ -165,7 +173,8 @@ class Visualizer(object):
     def plot_value(self, simulator_agent, agent_policy, timesteps, plot_path, log_path):
         logger.debug('Generating ground truth...')
 
-        default_values = [['default'] * simulator_agent.nparams]
+        # default_values = [['default'] * simulator_agent.nparams]
+        default_values = [[self.randomized_env.unwrapped.dimensions[dimension].default_value for dimension in range(0, simulator_agent.nparams)]]
 
         for randomized_dimension in range(simulator_agent.nparams):
             evaluation_array_mean = []

@@ -1,12 +1,14 @@
 import numpy as np
 
+from common.utils.recorder import VideoRecorder
+
 LUNAR_LANDER_SOLVED_SCORE = 200.0
 ERGO_SOLVED_DISTANCE = 0.025
 PUSHER_SOLVED_DISTANCE = 0.25  # Radius=0.17
 
 
 def evaluate_policy(nagents, env, agent_policy, replay_buffer, eval_episodes, max_steps, freeze_agent=True,
-                    return_rewards=False, add_noise=False, log_distances=True, 
+                    return_rewards=False, record_video=False, add_noise=False, log_distances=True, video_path=None,
                     gail_rewarder=None, noise_scale=0.1, min_buffer_len=1000):
     """Evaluates a given policy in a particular environment, 
     returns an array of rewards received from the evaluation step.
@@ -23,6 +25,10 @@ def evaluate_policy(nagents, env, agent_policy, replay_buffer, eval_episodes, ma
         agent_total_rewards = np.zeros(nagents)
         state = env.reset()
 
+        base_path = video_path if video_path is None else video_path + '-episode%d'%(ep)
+        recorder = VideoRecorder(env, base_path=base_path, enabled=record_video)
+        recorder.capture_frame()
+
         done = [False] * nagents
         add_to_buffer = [True] * nagents
         steps = 0
@@ -36,6 +42,7 @@ def evaluate_policy(nagents, env, agent_policy, replay_buffer, eval_episodes, ma
                 action = action.clip(-1, 1)
 
             next_state, reward, done, info = env.step(action)
+            recorder.capture_frame()
             if gail_rewarder is not None:
                 reward = gail_rewarder.get_reward(np.concatenate([state, action], axis=-1))
 
@@ -61,6 +68,8 @@ def evaluate_policy(nagents, env, agent_policy, replay_buffer, eval_episodes, ma
 
             state = next_state
             steps += 1
+
+        recorder.close()
 
         # Train for total number of env iterations
         if not freeze_agent and len(replay_buffer.storage) > min_buffer_len:
