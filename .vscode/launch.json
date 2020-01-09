@@ -1,0 +1,83 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {   
+            "name": "Python module: baseline",
+            "type": "python",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "module": "experiments.domainrand.experiment_driver",
+            "args": [
+                "pusher", // [lunar|pusher|ergo]
+                "--experiment-name", "unfreeze-policy",
+                "--freeze-discriminator",
+                "--experiment-prefix", "debug-true-baseline",
+                "--agent-name", "baseline",
+                "--initial-svpg-step", "1e6",
+                "--continuous-svpg",
+                "--freeze-svpg",
+                "--seed", "0",
+                "--plot-frequency", "5",
+            ],
+            "env": {"CUDA_VISIBLE_DEVICES": 1},
+            "justMyCode": false,
+            "subProcess": true,
+        },
+        {   
+            "name": "Python module: uniform domain randomization",
+            "type": "python",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "module": "experiments.domainrand.experiment_driver",
+            "args": [
+                "lunar", // [lunar|pusher|ergo]
+                "--experiment-name", "unfreeze-policy",
+                "--freeze-discriminator",
+                "--randomized-env-id", "LunarLanderRandomized-v0", // [LunarLanderRandomized-v0, Pusher3DOFRandomized-v0, ErgoReacher4DOFRandomizedEasy-v0, ErgoReacherRandomizedBacklashEasy-v0, ErgoReacher-6Dof-Randomized-Headless-v0]
+                "--experiment-prefix", "debug-fulldr",
+                "--agent-name", "fulldr",
+                "--initial-svpg-step", "1e6",
+                "--continuous-svpg",
+                "--freeze-svpg",
+                "--seed", "0",
+            ],
+            "env": {"CUDA_VISIBLE_DEVICES": 1},
+            "justMyCode": true,
+            "subProcess": true,
+        },
+        {   
+            "name": "Python module: active domain randomization",
+            "type": "python",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "module": "experiments.domainrand.experiment_driver",
+            "args": [
+                "lunar", // [lunar|pusher|ergo]
+                "--experiment-name", "unfreeze-policy",
+                // "--load-discriminator",
+                "--randomized-env-id", "LunarLanderRandomized-v0", // [LunarLanderRandomized-v0, Pusher3DOFRandomized-v0, ErgoReacher4DOFRandomizedEasy-v0, ErgoReacherRandomizedBacklashEasy-v0, ErgoReacher-6Dof-Randomized-Headless-v0]
+                // "--freeze-discriminator",
+                "--experiment-prefix", "debug-ours-agent-scratch",
+                "--agent-name", "activedr",
+                "--continuous-svpg",
+                "--seed", "0",
+            ],
+            "env": {"CUDA_VISIBLE_DEVICES": 1},
+            "justMyCode": true,
+            "subProcess": true,
+        }
+    ]
+}
