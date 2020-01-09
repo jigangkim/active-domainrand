@@ -28,6 +28,13 @@ if __name__ == '__main__':
     visualizer = Visualizer(randomized_env_id=args.randomized_eval_env_id, seed=args.seed)
 
     reference_env = gym.make(args.reference_env_id)    
+    # Weird bug with mujoco-py render mode (https://github.com/openai/mujoco-py/issues/390)
+    # Must first initialize glfw window with mode='human' in order to use mode='rgb_array'
+    # visualizer.randomized_env.get_images(mode='human')
+    # or use the following workaround...
+    # from mujoco_py import GlfwContext
+    # GlfwContext(offscreen=True)  # Create a window to init GLFW.
+    # visualizer.randomized_env.init_glfw()
 
     if args.freeze_agent:
         # only need the actor
@@ -59,7 +66,7 @@ if __name__ == '__main__':
     while simulator_agent.agent_timesteps < args.max_agent_timesteps:
         if svpg_timesteps % args.plot_frequency == 0:
             generalization_metric = visualizer.generate_ground_truth(simulator_agent, agent_policy, svpg_timesteps, 
-                log_path=paths['groundtruth_logs'])
+                log_path=paths['groundtruth_logs'], plot_path=paths['policy_plots'], record_video=True)
 
             np.savez('{}/generalization-seed{}.npz'.format(paths['paper'], args.seed),
                 generalization_metric=generalization_metric,
@@ -92,7 +99,7 @@ if __name__ == '__main__':
                     simulator_agent.svpg.save(directory=paths['particles'])
 
                 generalization_metric = visualizer.generate_ground_truth(simulator_agent, agent_policy, svpg_timesteps, 
-                log_path=paths['groundtruth_logs'])
+                log_path=paths['groundtruth_logs'], plot_path=paths['policy_plots'], record_video=True)
 
                 np.savez('{}/best-generalization-seed{}.npz'.format(paths['paper'], args.seed),
                     generalization_metric=generalization_metric,

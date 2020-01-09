@@ -2,6 +2,9 @@ import logging
 
 import gym
 import numpy as np
+import multiprocessing
+multiprocessing.set_start_method('spawn', True) # hacky workaround for ptvsd (python debugger for vscode)
+from mujoco_py import GlfwContext
 from multiprocessing import Process, Pipe
 from baselines.common.vec_env import VecEnv, CloudpickleWrapper
 
@@ -52,7 +55,12 @@ def worker(remote, parent_remote, env_fn_wrapper):
                 ob = env.reset()
                 remote.send(ob)
             elif cmd == 'render':
-                remote.send(env.render(mode='rgb_array'))
+                # remote.send(env.render(mode='rgb_array'))
+                remote.send(env.render(mode=data))
+            elif cmd == 'init_glfw':
+                if hasattr(env, 'init_glfw'):
+                    env.init_glfw()
+                remote.send(None)
             elif cmd == 'close':
                 remote.close()
                 break
@@ -102,6 +110,7 @@ class RandomizedSubprocVecEnv(VecEnv):
         self.remotes, self.work_remotes = zip(*[Pipe() for _ in range(nenvs)])
         self.ps = [Process(target=worker, args=(work_remote, remote, CloudpickleWrapper(env_fn)))
                    for (work_remote, remote, env_fn) in zip(self.work_remotes, self.remotes, env_fns)]
+        self.dimensions = env_fns[0]().dimensions
         for p in self.ps:
             p.daemon = True  # if the main process crashes, we should not cause things to hang
             p.start()
@@ -191,12 +200,17 @@ class RandomizedSubprocVecEnv(VecEnv):
         for p in self.ps:
             p.join()
 
-    def get_images(self):
+    def get_images(self, mode='rgb_array'):
         self._assert_not_closed()
         for pipe in self.remotes:
-            pipe.send(('render', None))
+            pipe.send(('render', mode))
         imgs = [pipe.recv() for pipe in self.remotes]
         return imgs
+
+    def init_glfw(self):
+        self._assert_not_closed()
+        for pipe in self.remotes:
+            pipe.send(('init_glfw', None))
 
     def _assert_not_closed(self):
         assert not self.closed, "Trying to operate on a SubprocVecEnv after calling close()"

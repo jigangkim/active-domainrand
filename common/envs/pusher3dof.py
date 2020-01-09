@@ -23,6 +23,11 @@ class PusherEnv3DofEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.dimensions = []
         self._locate_randomize_parameters()
 
+        self.run_init_glfw = True
+        if self.run_init_glfw:
+            # https://github.com/openai/mujoco-py/issues/390
+            mujoco_py.GlfwContext(offscreen=True)  # Create a window to init GLFW.
+
     def _locate_randomize_parameters(self):
         self.root = self.reference_xml.getroot()
         end_effector = self.root.find(".//body[@name='distal_4']")
@@ -75,6 +80,12 @@ class PusherEnv3DofEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.wrist[2].set('fromto', '0 +{:3f} 0. {:3f} +{:3f} 0'.format(grabber_width, grabber_width, grabber_width))
         self.tips[0].set('pos', '{:3f} -{:3f} 0.'.format(grabber_width, grabber_width))
         self.tips[1].set('pos', '{:3f} {:3f} 0.'.format(grabber_width, grabber_width))
+
+    def init_glfw(self):
+        # https://github.com/openai/mujoco-py/issues/390
+        # mujoco_py.GlfwContext(offscreen=True)  # Create a window to init GLFW.
+        # self.run_init_glfw = True
+        pass
 
     def step(self, action):
         arm_dist = np.linalg.norm(self.get_body_com("object")[:2] - self.get_body_com("tips_arm")[:2])
