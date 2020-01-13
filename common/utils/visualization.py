@@ -91,7 +91,7 @@ class Visualizer(object):
                 
                 randomized_rewards, final_distances = evaluate_policy(nagents=self.neval_eps, env=self.randomized_env, 
                     agent_policy=agent_policy, replay_buffer=None, eval_episodes=1,
-                    max_steps=self.max_steps, return_rewards=True, record_video=record_video, add_noise=False, log_distances=self.log_distances,
+                    max_steps=self.max_steps, return_rewards=True, record_video=record_video and i%DISPLAY_FREQUENCY == 0, add_noise=False, log_distances=self.log_distances,
                     video_path=os.path.join(plot_path, 'raw_video-%d-dim%d-index-%dof%d'%(timesteps, randomized_dimension, i+1, len(self.ground_truth_x))))
 
                 if self.log_distances:

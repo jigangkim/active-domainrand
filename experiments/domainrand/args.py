@@ -126,6 +126,8 @@ def get_args():
         subparser.add_argument("--seed", default=123, type=int)
         subparser.add_argument("--use-bootstrapping-results", action="store_true", help="where to look when running batch-reward-anaylsis")
 
+        subparser.add_argument("--record-video", action="store_true", help="record video")
+
     return parser.parse_args()
 
 def check_args(args):
