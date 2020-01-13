@@ -25,7 +25,7 @@ python -m experiments.domainrand.experiment_driver [lunar|pusher|ergo] \
     --continuous-svpg --freeze-svpg --seed={SEED}
 ```
 
-#### Uniform Domain Randomization
+#### Uniform Domain Randomization 
 
 ```
 python -m experiments.domainrand.experiment_driver [lunar|pusher|ergo] \
@@ -34,12 +34,48 @@ python -m experiments.domainrand.experiment_driver [lunar|pusher|ergo] \
     --continuous-svpg --freeze-svpg --seed={SEED}
 ```
 
-### Active Domain Randomization
+### Active Domain Randomization (bootstraping?)
 
 ```
 python -m experiments.domainrand.experiment_driver [lunar|pusher|ergo] \
     --experiment-name=unfreeze-policy --load-discriminator --randomized-eval-env-id="[corresponding env ID]" \
     --freeze-discriminator --experiment-prefix="ours-agent-scratch" --seed={SEED}
+```
+
+### baseline - lunar, pusher (by jgkim)
+
+```
+python -m experiments.domainrand.experiment_driver lunar --experiment-name=unfreeze-policy --freeze-discriminator \
+    --experiment-prefix="200113render-true-baseline" --agent-name=baseline --initial-svpg-steps=1e6 --continuous-svpg \
+    --freeze-svpg --record-video
+
+python -m experiments.domainrand.experiment_driver pusher --experiment-name=unfreeze-policy --freeze-discriminator \
+    --experiment-prefix="200113render-true-baseline" --agent-name=baseline --initial-svpg-steps=1e6 --continuous-svpg \
+    --freeze-svpg --record-video
+```
+
+### DR - lunar, pusher (by jgkim)
+
+```
+python -m experiments.domainrand.experiment_driver lunar --experiment-name=unfreeze-policy \
+    --randomized-env-id=LunarLanderRandomized-v0 --experiment-prefix="200113render-fulldr" --agent-name=fulldr \
+    --initial-svpg-steps=1e6 --continuous-svpg --freeze-svpg --record-video
+
+python -m experiments.domainrand.experiment_driver pusher --experiment-name=unfreeze-policy \
+    --randomized-env-id=Pusher3DOFRandomized-v0 --experiment-prefix="200113render-fulldr" --agent-name=fulldr \
+    --initial-svpg-steps=1e6 --continuous-svpg --freeze-svpg --record-video
+```
+
+### ADR - lunar, pusher (by jgkim)
+
+```
+python -m experiments.domainrand.experiment_driver lunar --experiment-name=unfreeze-policy \
+    --randomized-env-id=LunarLanderRandomized-v0 --experiment-prefix="200113render-ours-agent-scratch" --agent-name=activedr \
+    --continuous-svpg --record-video
+
+python -m experiments.domainrand.experiment_driver pusher --experiment-name=unfreeze-policy \
+    --randomized-env-id=Pusher3DOFRandomized-v0 --experiment-prefix="200113render-ours-agent-scratch" --agent-name=activedr \
+    --continuous-svpg --record-video
 ```
 
 ## Reference
