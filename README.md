@@ -15,8 +15,8 @@ Below is our code to reproduce the experiments in the paper. Please check out ou
 2. Option 2. Use conda virtual environment (anaconda3 or miniconda3 recommended)
 
     ```
-    cd path/to/cloned/repo
-    conda env create -f env.yml
+    cd path/to/cloned/repo \
+    conda env create -f env.yml \
     conda env activate adr-lg
     ```
 
