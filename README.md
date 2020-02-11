@@ -8,6 +8,18 @@
 
 Below is our code to reproduce the experiments in the paper. Please check out our [Domain Randomizer](https://github.com/montrealrobotics/domain-randomizer) repository if you're interested in a easy way to do domain randomization in parallel.
 
+## Installation (by jgkim)
+
+1. Option 1. Manually install the dependencies with setup.py (custom github repo packages must be installed manually!)
+
+2. Option 2. Use conda virtual environment (anaconda3 or miniconda3 recommended)
+
+    ```bash
+    cd path/to/cloned/repo
+    conda env create -f env.yml
+    conda env activate adr-lg
+    ```
+
 ## Experiments 
 
 ### Baseline Experiments
