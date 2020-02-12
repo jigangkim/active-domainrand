@@ -13,15 +13,17 @@ Below is our code to reproduce the experiments in the paper. Please check out ou
 1. Option 1. Manually install the dependencies with setup.py (custom github repo packages must be installed manually!)
 
 2. Option 2. Use conda virtual environment (anaconda3 or miniconda3 recommended)
- 
+    1. Move to cloned repo
     ```
     cd path/to/cloned/repo
     ```
+    2. Create conda environment 'adr-lg' (may take up to 10 minutes)
     ```
-    conda env create -f env.yml # create conda environment with name 'adr-lg'
+    conda env create -f env.yml
     ```
+    3. Activate environment and run code
     ```
-    conda env activate adr-lg # activate environment and run
+    conda activate adr-lg
     ```
 
 ## Experiments 
